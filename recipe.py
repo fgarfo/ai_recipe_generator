@@ -37,9 +37,9 @@ async def send_recieve():
         extra_headers={"Authorization": assemblyai_client}
     ) as _ws:
         await asyncio.sleep(0.1)
-        session_begins = await _ws.recv()
-        print(session_begins)
-        print("Starting interactive recipe chat with ChatGPT. Say exit to end the session.")
+        await _ws.recv()
+        print(
+            "\nStarting interactive recipe chat with ChatGPT. Say exit to end the session.")
 
         async def send():
             while True:
