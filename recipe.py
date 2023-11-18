@@ -32,7 +32,7 @@ URL = "wss://api.assemblyai.com/v2/realtime/ws?sample_rate=16000"
 async def send_recieve():
     async with websockets.connect(
         URL,
-        ping_timeout=10,
+        ping_timeout=20,
         ping_interval=5,
         extra_headers={"Authorization": assemblyai_client}
     ) as _ws:
@@ -48,9 +48,6 @@ async def send_recieve():
                     data = base64.b64encode(data).decode("utf-8")
                     json_data = json.dumps({"audio_data": data})
                     await _ws.send(json_data)
-
-                    if "exit" in data:
-                        break
 
                 except websockets.exceptions.ConnectionClosedError as e:
                     print(e)
