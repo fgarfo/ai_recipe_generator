@@ -7,9 +7,8 @@ client = OpenAI(api_key=os.getenv("OPENAI_KEY"))
 
 
 def recipe_generator(prompt):
-    full_prompt = "Make a recipe with the following ingredients: " + prompt
     response = client.chat.completions.create(model="gpt-3.5-turbo",
                                               messages=[{
-                                                  "role": "user", "content": full_prompt}],
+                                                  "role": "user", "content": "Make a recipe with the following ingredients: " + prompt}],
                                               max_tokens=500)
     return response.choices[0].message.content
