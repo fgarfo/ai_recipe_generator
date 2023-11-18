@@ -1,6 +1,5 @@
 from dotenv import load_dotenv
-from openai import OpenAI
-import typer
+from openai_tool import recipe_generator
 import pyaudio
 import asyncio
 import websockets
@@ -9,7 +8,6 @@ import base64
 import os
 
 load_dotenv()
-openai_client = OpenAI(api_key=os.getenv("OPENAI_KEY"))
 assemblyai_client = os.getenv("ASSEMBLYAI_KEY")
 
 
@@ -41,7 +39,7 @@ async def send_recieve():
         await asyncio.sleep(0.1)
         session_begins = await _ws.recv()
         print(session_begins)
-        print("Sending messages")
+        print("Starting interactive recipe chat with ChatGPT. Say exit to end the session.")
 
         async def send():
             while True:
@@ -50,6 +48,10 @@ async def send_recieve():
                     data = base64.b64encode(data).decode("utf-8")
                     json_data = json.dumps({"audio_data": data})
                     await _ws.send(json_data)
+
+                    if "exit" in json_data:
+                        break
+
                 except websockets.exceptions.ConnectionClosedError as e:
                     print(e)
                     assert e.encode == 4008
@@ -64,9 +66,14 @@ async def send_recieve():
                     result_str = await _ws.recv()
                     result = json.loads(result_str)
                     prompt = result["text"]
+
+                    if "exit" in prompt:
+                        break
+
                     if prompt and result["message_type"] == "FinalTranscript":
                         print("Me: ", prompt)
-                        print("Bot: ", "this is my answer")
+                        response = recipe_generator(prompt)
+                        print("OpenAI:", response)
                 except websockets.exceptions.ConnectionClosedError as e:
                     print(e)
                     assert e.encode == 4008
