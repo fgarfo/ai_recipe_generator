@@ -1,16 +1,16 @@
 from dotenv import load_dotenv
+from openai import OpenAI
+from configure import ASSEMBLYAI_KEY
 import typer
 import pyaudio
 import asyncio
 import websockets
 import json
 import base64
-from openai import OpenAI
 import os
 
 load_dotenv()
 openai_client = OpenAI(api_key=os.getenv("OPENAI_KEY"))
-assemblyai_client = OpenAI(api_key=os.getenv("ASSEMBLYAI_KEY"))
 
 
 fpb = 3200
@@ -36,7 +36,7 @@ async def send_recieve():
         URL,
         ping_timeout=20,
         ping_interval=5,
-        extra_headers={"Authorization": assemblyai_client}
+        extra_headers={"Authorization": ASSEMBLYAI_KEY}
     ) as _ws:
         await asyncio.sleep(0.1)
         session_begins = await _ws.recv()
